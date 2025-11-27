@@ -1,60 +1,64 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-PT">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Geometry Dash — Custom Levels & Avatar Editor</title>
+<title>Geometry Dash — Custom Levels (index.html)</title>
 <style>
   :root{
-    --bg:#0b1020; --panel:#0f1724; --accent:#7bd389; --muted:#9aa6b2;
+    --bg:#071226; --panel:#0f1724; --accent:#7bd389; --muted:#9aa6b2; --danger:#e24b4b;
   }
-  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,Arial;color:#e6eef6;background:linear-gradient(180deg,#071020 0%, #081423 60%);}
-  .app{display:flex;gap:18px;padding:18px;box-sizing:border-box;}
-  .left, .right{background:var(--panel);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.45);}
-  .left{flex:1;min-width:420px}
-  .right{width:380px;display:flex;flex-direction:column;gap:12px}
-  canvas{width:100%;height:360px;border-radius:8px;background:linear-gradient(180deg,#06111b,#071226);display:block}
-  .controls, .section{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-  button{background:transparent;border:1px solid rgba(200,200,200,.08);padding:8px 10px;border-radius:8px;color:#e6eef6;cursor:pointer}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:linear-gradient(180deg,#04101a 0%,#071226 100%);color:#e6eef6}
+  .wrap{max-width:1100px;margin:18px auto;padding:12px;display:grid;grid-template-columns:1fr 380px;gap:16px}
+  .card{background:var(--panel);padding:12px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  canvas{width:100%;height:360px;border-radius:8px;background:linear-gradient(180deg,#06111b,#071226)}
+  .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
+  button{background:transparent;border:1px solid rgba(255,255,255,.06);padding:8px 10px;border-radius:8px;color:inherit;cursor:pointer}
   button.primary{background:var(--accent);color:#052018;border:none}
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-  textarea{width:100%;height:160px;background:#071627;color:#dfeff1;border-radius:8px;border:1px solid rgba(255,255,255,.03);padding:8px;font-family:monospace;font-size:13px}
-  select,input[type=color],input[type=range],input[type=text]{background:#071627;color:#dfeff1;border-radius:8px;padding:6px;border:1px solid rgba(255,255,255,.03)}
+  select,input[type=color],textarea,input[type=range]{background:#071627;color:#dfeff1;border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,.03)}
+  textarea{width:100%;height:150px;font-family:ui-monospace,Monaco,monospace;font-size:13px;resize:vertical}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
   .row{display:flex;gap:8px;align-items:center}
-  .small{font-size:12px;color:var(--muted)}
-  .score{font-weight:700;color:var(--accent)}
   .avatar-preview{width:80px;height:60px;border-radius:8px;background:linear-gradient(180deg,#0b3440,#05222b);display:flex;align-items:center;justify-content:center}
-  .muted{color:var(--muted)}
-  footer{margin-top:8px;font-size:12px;color:var(--muted)}
-  pre{font-size:12px;color:var(--muted);white-space:pre-wrap}
+  .muted{color:var(--muted);font-size:13px}
+  .saved-list{max-height:180px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+  .saved-item{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:6px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  footer.notice{grid-column:1/-1;margin-top:8px;color:var(--muted);font-size:13px;text-align:center}
+  @media (max-width:980px){.wrap{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="left">
-    <canvas id="game" width="900" height="360"></canvas>
 
-    <div class="controls">
+<div class="wrap">
+  <!-- LEFT: Game + controls -->
+  <div class="card">
+    <canvas id="game" width="900" height="360" aria-label="Geometry Dash game"></canvas>
+
+    <div class="controls" style="margin-top:10px">
       <button id="playBtn" class="primary">▶ Play</button>
       <button id="stopBtn">■ Stop</button>
       <button id="resetBtn">↺ Reset</button>
-      <div style="margin-left:auto" class="small muted">Best: <span id="bestDisplay">0</span></div>
+
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <div class="muted">Best:</div>
+        <div id="bestDisplay" style="font-weight:700;color:var(--accent)">0</div>
+      </div>
     </div>
 
-    <div class="section">
+    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center">
       <div style="flex:1">
-        <label>Level selector 🌐</label>
-        <select id="levelSelect"></select>
+        <label>Nível</label>
+        <select id="levelSelect" style="width:100%"></select>
       </div>
-      <div style="width:130px">
+
+      <div style="width:140px">
         <label>Speed ×</label>
         <input id="speedRange" type="range" min="1" max="6" value="3" />
       </div>
-    </div>
 
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-      <div>
-        <label>Music Theme 🎵</label>
+      <div style="width:180px">
+        <label>Music Theme</label>
         <select id="musicTheme">
           <option value="bouncy">Bouncy</option>
           <option value="dark">Dark</option>
@@ -63,157 +67,156 @@
         </select>
       </div>
 
-      <div>
+      <div style="width:140px">
         <label>Volume</label>
         <input id="volume" type="range" min="0" max="1" step="0.01" value="0.14" />
       </div>
     </div>
 
-    <footer>
-      <div class="small muted">Controls: Space / Click to jump. Obstacles spawn from right → left. Editor below allows JSON levels saved to localStorage.</div>
-    </footer>
+    <div style="margin-top:12px" class="muted">Controles: Space / Click para saltar. Pressiona 'r' para reset. Os níveis são baseados em JSON — edita no painel à direita.</div>
   </div>
 
-  <div class="right">
-    <div class="section">
-      <div style="flex:1">
-        <label>Level Editor ✏️ (JSON)</label>
-        <textarea id="levelJSON"></textarea>
-      </div>
+  <!-- RIGHT: Editor, avatar, saved -->
+  <div class="card">
+    <div>
+      <label>Level Editor (JSON)</label>
+      <textarea id="levelJSON" spellcheck="false"></textarea>
     </div>
 
-    <div class="section">
-      <button id="loadLevel">Load Level</button>
-      <button id="saveLevel">Save Level</button>
-      <button id="exportLevel">Export JSON</button>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button id="loadLevel">Load</button>
+      <button id="saveLevel">Save</button>
+      <button id="exportLevel">Export</button>
       <button id="importExample">Insert Example</button>
-      <div style="flex:1"></div>
     </div>
 
-    <div class="section">
-      <label>Avatar Editor 🎨</label>
+    <hr style="border:none;height:8px;background:transparent">
+
+    <div>
+      <label>Avatar Editor</label>
       <div style="display:flex;gap:8px;align-items:center">
-        <select id="avatarShape">
-          <option value="square">Square</option>
-          <option value="circle">Circle</option>
-          <option value="triangle">Triangle</option>
-        </select>
+        <select id="avatarShape"><option value="square">Square</option><option value="circle">Circle</option><option value="triangle">Triangle</option></select>
         <input id="avatarColor" type="color" value="#7bd389" />
         <button id="applyAvatar">Apply</button>
         <div class="avatar-preview" id="avatarPreview"></div>
       </div>
-      <div style="margin-top:6px" class="small muted">Avatar updates player appearance and is saved to localStorage.</div>
+      <div class="muted" style="margin-top:6px">Avatar guardado em localStorage.</div>
     </div>
 
-    <div class="section">
-      <label>Saved Levels 🔖</label>
-      <div id="savedList" style="display:flex;flex-direction:column;gap:6px;max-height:140px;overflow:auto"></div>
+    <hr style="border:none;height:8px;background:transparent">
+
+    <div>
+      <label>Saved Levels</label>
+      <div class="saved-list" id="savedList"></div>
     </div>
 
-    <div class="section">
-      <label>Quick Info</label>
-      <pre id="infoBox">Use "Insert Example" to get a starter level. Edit obstacle x positions, widths, and heights. Save to name-specific keys.</pre>
+    <div style="margin-top:8px">
+      <label>Quick info</label>
+      <pre id="infoBox" style="white-space:pre-wrap;font-size:13px;color:var(--muted);margin:6px 0">Use "Insert Example" para começar. Edite valores x/w/h para posicionar obstáculos (x em pixels na timeline inicial).</pre>
     </div>
   </div>
+
+  <footer class="notice">Guarda este ficheiro como <strong>index.html</strong> na raiz do repositório e ativa GitHub Pages — o jogo vai correr online. 🎮🚀</footer>
 </div>
 
 <script>
-/* =========================
-   Geometry Dash — Single file
-   Features:
-   - core game: jump, gravity, collision
-   - JSON levels: save/load localStorage
-   - WebAudio themes: bouncy/dark/fast
-   - Avatar editor
-   - Best-score per level saved
-   - performant with requestAnimationFrame
-   - comments + emojis for readability
-   ========================= */
+/* Single-file Geometry Dash — improved for GitHub Pages
+   - Multiple levels + Editor (JSON)
+   - WebAudio themes (resume on interaction)
+   - Avatar editor & preview
+   - Best-score per level (localStorage)
+   - No external deps
+*/
 
-// ---------- Utilities ----------
-const qs = sel => document.querySelector(sel);
+// ---------- Helpers ----------
+const qs = s => document.querySelector(s);
 const $ = id => document.getElementById(id);
 
-// ---------- Canvas & Context ----------
+// Canvas
 const canvas = qs('#game');
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
-// ---------- Game state ----------
+// State
 let running = false;
 let lastT = 0;
-let scrollX = 0;
-let spawnOffset = 0;
-let speedMultiplier = 3;
-let gravity = 0.9;
 let score = 0;
-let obstacles = []; // {x,w,h,y}
+let obstacles = [];
 let activeLevel = null;
-let bestScores = {}; // loaded from localStorage
-const storagePrefix = 'gd_custom_'; // keys stored with prefix
-
-// ---------- Player / Avatar ----------
+const storagePrefix = 'gd_custom_';
 const player = {
   x: 120, y: H - 70, vy: 0, w: 32, h: 32, onGround: true,
   shape: localStorage.getItem(storagePrefix+'avatar_shape') || 'square',
   color: localStorage.getItem(storagePrefix+'avatar_color') || '#7bd389'
 };
+let bestScores = {};
 
-// ---------- Default levels (example) ----------
-const exampleLevel = {
-  name: "Tutorial",
-  speed: 3,
-  gravity: 0.9,
-  obstacles: [
-    { x: 900, w: 30, h: 60, y: 0 },
-    { x: 1200, w: 30, h: 80, y: 0 },
-    { x: 1500, w: 30, h: 120, y: 0 },
-    { x: 2000, w: 30, h: 160, y: 0 },
-    { x: 2600, w: 60, h: 40, y: 0 }
-  ]
-};
+// Example levels (multiple)
+const exampleLevels = [
+  { name: "Tutorial", speed: 3, gravity: 0.9, obstacles:[
+      { x: 900, w: 30, h: 60, y: 0 },
+      { x: 1200, w: 30, h: 80, y: 0 },
+      { x: 1500, w: 30, h: 120, y: 0 }
+  ]},
+  { name: "Medium", speed: 4, gravity: 1.0, obstacles:[
+      { x: 900, w: 30, h: 70 },{ x: 1100, w: 30, h: 100 },{ x: 1450, w: 40, h: 110 },
+      { x: 1900, w: 30, h: 140 },{ x: 2300, w: 60, h: 50 }
+  ]},
+  { name: "Speedrun", speed: 5, gravity: 1.0, obstacles:[
+      { x: 800, w: 30, h: 80 },{ x: 1000, w: 40, h: 120 },{ x: 1250, w: 30, h: 80 },
+      { x: 1500, w: 50, h: 40 },{ x: 1700, w: 30, h: 140 },{ x: 2000, w: 60, h: 60 }
+  ]}
+];
 
-// Populate level select with saved + example
+// ---------- Persistence & UI helpers ----------
 function getSavedLevelKeys(){
   const keys = [];
-  for(let i=0;i<localStorage.length;i++){
+  for (let i=0;i<localStorage.length;i++){
     const k = localStorage.key(i);
-    if(k && k.startsWith(storagePrefix+'level_')) keys.push(k);
+    if (k && k.startsWith(storagePrefix+'level_')) keys.push(k);
   }
   return keys;
 }
+
 function refreshSavedList(){
-  const list = qs('#savedList');
-  list.innerHTML = '';
-  const keys = getSavedLevelKeys();
-  keys.sort();
+  const container = qs('#savedList');
+  container.innerHTML = '';
+  const keys = getSavedLevelKeys().sort();
   keys.forEach(k=>{
-    const obj = JSON.parse(localStorage.getItem(k));
-    const div = document.createElement('div');
-    div.style.display='flex'; div.style.gap='6px'; div.style.alignItems='center';
-    div.innerHTML = `<div style="flex:1;color:#dfeff1">${obj.name}</div>
-      <button data-key="${k}" class="loadBtn">Load</button>
-      <button data-key="${k}" class="delBtn">Delete</button>`;
-    list.appendChild(div);
+    try{
+      const obj = JSON.parse(localStorage.getItem(k));
+      const div = document.createElement('div');
+      div.className = 'saved-item';
+      div.innerHTML = `<div style="min-width:0;flex:1"><strong style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${obj.name}</strong><div style="font-size:12px;color:var(--muted)">Obstáculos: ${obj.obstacles?.length||0}</div></div>
+        <div style="display:flex;gap:6px">
+          <button data-key="${k}" class="loadBtn" title="Load">Load</button>
+          <button data-key="${k}" class="delBtn" title="Delete" style="border-color:rgba(255,80,80,.12)">Del</button>
+        </div>`;
+      container.appendChild(div);
+    }catch(e){}
   });
-  // levelSelect
+
+  // populate level select: examples + saved
   const sel = qs('#levelSelect');
   sel.innerHTML = '';
-  const optExample = document.createElement('option');
-  optExample.value = '__example__';
-  optExample.textContent = '— Example / Starter —';
-  sel.appendChild(optExample);
-  keys.forEach(k=>{
-    const obj = JSON.parse(localStorage.getItem(k));
-    const o = document.createElement('option');
-    o.value = k; o.textContent = obj.name || k.replace(storagePrefix+'level_','');
-    sel.appendChild(o);
+  const gOpt = document.createElement('optgroup'); gOpt.label = 'Examples';
+  exampleLevels.forEach((lev,i)=>{
+    const o = document.createElement('option'); o.value = '__example__'+i; o.textContent = lev.name; gOpt.appendChild(o);
   });
+  sel.appendChild(gOpt);
+  const sOpt = document.createElement('optgroup'); sOpt.label = 'Saved';
+  keys.forEach(k=>{
+    try{
+      const obj = JSON.parse(localStorage.getItem(k));
+      const o = document.createElement('option'); o.value = k; o.textContent = obj.name || k.replace(storagePrefix+'level_',''); sOpt.appendChild(o);
+    }catch(e){}
+  });
+  sel.appendChild(sOpt);
 }
 
-// ---------- Best score persistence ----------
-function loadBestScores(){ 
-  try { bestScores = JSON.parse(localStorage.getItem(storagePrefix+'bestScores')||'{}'); } catch(e){ bestScores = {}; }
+// Best-scores
+function loadBestScores(){
+  try{ bestScores = JSON.parse(localStorage.getItem(storagePrefix+'bestScores')||'{}'); }catch(e){ bestScores = {}; }
   updateBestDisplay();
 }
 function saveBestScores(){ localStorage.setItem(storagePrefix+'bestScores', JSON.stringify(bestScores)); }
@@ -223,35 +226,28 @@ function updateBestDisplay(){
   qs('#bestDisplay').textContent = Math.round(val);
 }
 
-// ---------- Music: WebAudio simple generator ----------
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let masterGain = audioCtx.createGain();
-masterGain.connect(audioCtx.destination);
-masterGain.gain.value = Number(qs('#volume').value || 0.12);
-let musicRunning = false;
+// ---------- WebAudio (simple patterns) ----------
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const audioCtx = AudioCtx ? new AudioCtx() : null;
+let masterGain = audioCtx ? audioCtx.createGain() : null;
+if (masterGain) { masterGain.connect(audioCtx.destination); masterGain.gain.value = Number(qs('#volume').value || 0.14); }
 let musicNodes = [];
-
-function stopMusic(){
-  musicNodes.forEach(n=>{ try{ n.stop(); }catch(e){}});
-  musicNodes = [];
-  musicRunning = false;
-}
+function stopMusic(){ if(!audioCtx) return; musicNodes.forEach(n=>{ try{ n.stop(); }catch(e){} }); musicNodes=[]; }
 function startMusic(theme){
+  if(!audioCtx) return;
   stopMusic();
   if(theme === 'silent') return;
-  // simple rhythm/lead using Oscillators + envelopes
-  const tempo = theme === 'fast' ? 160 : (theme==='bouncy' ? 100 : 70);
-  const scale = theme === 'dark' ? [48,50,55,57,60,63] : [60,62,64,67,69,72]; // midi-like
-  let t0 = audioCtx.currentTime;
-  musicRunning = true;
-  for(let i=0;i<64;i++){
-    const noteIndex = (i + (theme==='bouncy'?0:2)) % scale.length;
-    const freq = 440 * Math.pow(2, (scale[noteIndex]-69)/12);
+  const tempo = theme === 'fast' ? 160 : (theme === 'bouncy' ? 100 : 72);
+  const scale = theme === 'dark' ? [48,50,55,57,60,63] : [60,62,64,67,69,72];
+  const t0 = audioCtx.currentTime + 0.02;
+  for (let i=0;i<64;i++){
+    const idx = (i + (theme==='bouncy'?0:2)) % scale.length;
+    const freq = 440 * Math.pow(2, (scale[idx]-69)/12);
     const osc = audioCtx.createOscillator();
     const g = audioCtx.createGain();
     osc.type = theme==='dark' ? 'sawtooth' : 'square';
-    osc.frequency.setValueAtTime(freq, t0 + i * (60/tempo));
-    g.gain.setValueAtTime(0, t0 + i * (60/tempo));
+    osc.frequency.setValueAtTime(freq, t0 + i*(60/tempo));
+    g.gain.setValueAtTime(0, t0 + i*(60/tempo));
     g.gain.linearRampToValueAtTime(0.08, t0 + i*(60/tempo) + 0.01);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + i*(60/tempo) + 0.22);
     osc.connect(g); g.connect(masterGain);
@@ -261,62 +257,63 @@ function startMusic(theme){
   }
 }
 
-// adjust volume slider
+// volume slider
 qs('#volume').addEventListener('input', e=>{
-  masterGain.gain.value = Number(e.target.value);
+  if(masterGain) masterGain.gain.value = Number(e.target.value);
 });
 
-// theme change handler (when playing, restart)
+// resume audio on first user interaction (required by some browsers)
+function ensureAudioResume(){
+  if(!audioCtx) return;
+  if(audioCtx.state === 'suspended' || audioCtx.state === 'interrupted'){
+    audioCtx.resume().catch(()=>{});
+  }
+}
+
+// when theme changes while playing, restart
 qs('#musicTheme').addEventListener('change', ()=>{
   if(running){
-    // resume audio context on interaction if needed
-    if(audioCtx.state === 'suspended') audioCtx.resume();
+    ensureAudioResume();
     startMusic(qs('#musicTheme').value);
   }
 });
 
-// ---------- Game loop ----------
+// ---------- Game core ----------
 function spawnFromLevel(level){
   obstacles = JSON.parse(JSON.stringify(level.obstacles || [])); // deep copy
-  // obstacles are absolute world x positions; we will scroll them by reducing x
-  scrollX = 0;
-  spawnOffset = 0;
   score = 0;
   updateBestDisplay();
 }
-
 function startGame(){
   if(running) return;
   running = true;
   lastT = performance.now();
-  // set player
   player.y = H - 70; player.vy = 0; player.onGround = true;
-  speedMultiplier = Number(qs('#speedRange').value) * (activeLevel?.speed || 1);
-  gravity = activeLevel?.gravity ?? 0.9;
-  // audio
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  startMusic(qs('#musicTheme').value);
+  // speed multiplier from UI and level
+  const theme = qs('#musicTheme').value;
+  ensureAudioResume();
+  startMusic(theme);
   requestAnimationFrame(loop);
 }
-
 function stopGame(){
   running = false;
   stopMusic();
 }
-
 function resetGame(){
   stopGame();
-  scrollX = 0; score = 0; 
   if(activeLevel) spawnFromLevel(activeLevel);
-  draw(); updateBestDisplay();
+  draw();
+  updateBestDisplay();
 }
 
+// physics & loop
 function loop(ts){
   if(!running) return;
-  const dt = Math.min(40, ts - lastT) / 1000; // cap dt
+  const dt = Math.min(40, ts - lastT) / 1000;
   lastT = ts;
-  // physics
-  player.vy += gravity * 800 * dt; // gravity scaled
+
+  const gravity = activeLevel?.gravity ?? 0.9;
+  player.vy += gravity * 800 * dt;
   player.y += player.vy * dt;
   if(player.y + player.h > H - 28){
     player.y = H - 28 - player.h;
@@ -324,73 +321,64 @@ function loop(ts){
     player.onGround = true;
   } else player.onGround = false;
 
-  // scrolling and obstacle movement
+  const speedMultiplier = Number(qs('#speedRange').value) * (activeLevel?.speed || 1);
   const sx = speedMultiplier * 160 * dt;
-  scrollX += sx;
-  for(let ob of obstacles) ob.x -= sx;
+  for (let ob of obstacles) ob.x -= sx;
 
-  // remove passed obstacles and increase score
-  while(obstacles.length && obstacles[0].x + obstacles[0].w < 0) {
-    obstacles.shift();
-    score += 10; // small score per obstacle passed
+  while (obstacles.length && obstacles[0].x + obstacles[0].w < 0){
+    obstacles.shift(); score += 10;
   }
 
-  // collision detection
-  for(let ob of obstacles){
-    // obstacle rectangle
+  // collision
+  for (let ob of obstacles){
     const ox = ob.x, oy = H - 28 - (ob.h + (ob.y || 0));
-    if(rectIntersect(player.x, player.y, player.w, player.h, ox, oy, ob.w, ob.h)){
-      // collision => stop
+    if (rectIntersect(player.x, player.y, player.w, player.h, ox, oy, ob.w, ob.h)){
+      // hit
       running = false;
       stopMusic();
-      // save best
       const key = activeLevel ? `level:${activeLevel.name}` : 'level:unknown';
-      bestScores[key] = Math.max(bestScores[key]||0, score);
+      bestScores[key] = Math.max(bestScores[key] || 0, score);
       saveBestScores();
       updateBestDisplay();
       break;
     }
   }
 
-  // update best while playing (show live)
-  // draw
   draw();
-  if(running) requestAnimationFrame(loop);
+  if (running) requestAnimationFrame(loop);
 }
 
-// rectangle overlap helper
+// rectangle collision helper
 function rectIntersect(x1,y1,w1,h1,x2,y2,w2,h2){
   return !(x2 > x1 + w1 || x2 + w2 < x1 || y2 > y1 + h1 || y2 + h2 < y1);
 }
 
-// Jump handler
+// input: jump
 function jump(){
-  if(!running) return;
-  if(player.onGround){
-    player.vy = -420; // impulse
+  if (!running) return;
+  if (player.onGround){
+    player.vy = -420;
     player.onGround = false;
-    // little hop sound
-    const s = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    s.frequency.value = 520;
-    g.gain.value = 0.05;
-    s.connect(g); g.connect(masterGain);
-    s.start(); s.stop(audioCtx.currentTime + 0.06);
+    // small hop sound (feedback)
+    if (audioCtx){
+      const s = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      s.frequency.value = 520;
+      g.gain.value = 0.05;
+      s.connect(g); g.connect(masterGain);
+      s.start(); s.stop(audioCtx.currentTime + 0.06);
+    }
   }
 }
-// click / space
-canvas.addEventListener('pointerdown', e => {
-  jump();
-});
+canvas.addEventListener('pointerdown', e => { ensureAudioResume(); jump(); });
 window.addEventListener('keydown', e=>{
-  if(e.code === 'Space') { e.preventDefault(); jump(); }
-  if(e.key === 'r') resetGame();
+  if (e.code === 'Space'){ e.preventDefault(); ensureAudioResume(); jump(); }
+  if (e.key === 'r') resetGame();
 });
 
-// ---------- Draw ----------
+// ---------- Drawing ----------
 function draw(){
   ctx.clearRect(0,0,W,H);
-  // background gradient + parallax
   const g = ctx.createLinearGradient(0,0,0,H);
   g.addColorStop(0,'#071226'); g.addColorStop(1,'#04101a');
   ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
@@ -399,83 +387,74 @@ function draw(){
   ctx.fillStyle = '#0f3b2f';
   ctx.fillRect(0, H-28, W, 28);
 
-  // draw obstacles
-  for(let ob of obstacles){
+  // obstacles
+  ctx.save();
+  for (let ob of obstacles){
     const ox = ob.x, oy = H - 28 - (ob.h + (ob.y || 0));
     // shadow
     ctx.fillStyle = 'rgba(0,0,0,0.28)';
     ctx.fillRect(ox+4, oy+6, ob.w+2, ob.h+2);
-    ctx.fillStyle = '#e24b4b';
+    ctx.fillStyle = 'rgba(226,75,75,1)';
     ctx.fillRect(ox, oy, ob.w, ob.h);
-    // little spikes / decoration
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
-    ctx.fillRect(ox+4, oy+4, Math.min(10, ob.w-8), 6);
+    ctx.fillRect(ox+4, oy+4, Math.max(0, Math.min(10, ob.w-8)), 6);
   }
+  ctx.restore();
 
-  // draw player with avatar
+  // player (avatar)
   ctx.save();
   const px = player.x, py = player.y, pw = player.w, ph = player.h;
   ctx.translate(px + pw/2, py + ph/2);
-  const shape = player.shape;
-  const col = player.color;
-  ctx.fillStyle = col;
-  if(shape === 'square'){
+  ctx.fillStyle = player.color;
+  if (player.shape === 'square'){
     ctx.fillRect(-pw/2, -ph/2, pw, ph);
-    // eyes
     ctx.fillStyle = '#06161a'; ctx.fillRect(-8, -4, 6, 6); ctx.fillRect(4, -4, 6, 6);
-  } else if(shape === 'circle'){
+  } else if (player.shape === 'circle'){
     ctx.beginPath(); ctx.arc(0,0,pw/2,0,Math.PI*2); ctx.fill();
     ctx.fillStyle = '#06161a'; ctx.beginPath(); ctx.arc(-6,-2,3,0,Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.arc(5,-2,3,0,Math.PI*2); ctx.fill();
-  } else if(shape === 'triangle'){
-    ctx.beginPath();
-    ctx.moveTo(0, -ph/2);
-    ctx.lineTo(pw/2, ph/2);
-    ctx.lineTo(-pw/2, ph/2);
-    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.moveTo(0,-ph/2); ctx.lineTo(pw/2, ph/2); ctx.lineTo(-pw/2, ph/2); ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#06161a'; ctx.fillRect(-6, -2, 6, 6); ctx.fillRect(4, -2, 6, 6);
   }
   ctx.restore();
 
-  // HUD: score
+  // HUD
   ctx.fillStyle = '#dfeff1';
-  ctx.font = '16px system-ui';
+  ctx.font = '16px system-ui,Segoe UI';
   ctx.fillText(`Score: ${score}`, 10, 22);
 }
 
-// ---------- Level editor UI ----------
+// ---------- Editor UI ----------
 const levelJSON = qs('#levelJSON');
 qs('#importExample').addEventListener('click', ()=>{
-  levelJSON.value = JSON.stringify(exampleLevel, null, 2);
+  // insert first example by default
+  levelJSON.value = JSON.stringify(exampleLevels[0], null, 2);
 });
-
 qs('#loadLevel').addEventListener('click', ()=>{
   try{
     const data = JSON.parse(levelJSON.value);
+    if (!data.name) data.name = 'level-'+Date.now();
     activeLevel = data;
     spawnFromLevel(activeLevel);
-    qs('#infoBox').textContent = `Loaded level: ${data.name || 'Unnamed'}. Obstacles: ${data.obstacles?.length || 0}.`;
-    // update speed/gv sliders if present
-    qs('#speedRange').value = data.speed || 3;
+    qs('#infoBox').textContent = `Loaded level: ${data.name} — obstacles: ${data.obstacles?.length || 0}`;
     updateBestDisplay();
   }catch(e){
-    alert('Invalid JSON — fix it first.');
+    alert('JSON inválido — corrige antes de carregar.');
   }
 });
-
 qs('#saveLevel').addEventListener('click', ()=>{
   try{
     const data = JSON.parse(levelJSON.value);
-    if(!data.name) data.name = 'level-'+Date.now();
-    const key = storagePrefix+'level_'+data.name;
+    if (!data.name) data.name = 'level-'+Date.now();
+    const key = storagePrefix + 'level_' + data.name;
     localStorage.setItem(key, JSON.stringify(data));
     refreshSavedList();
-    qs('#infoBox').textContent = `Saved level: ${data.name}`;
+    qs('#infoBox').textContent = `Saved: ${data.name}`;
   }catch(e){
-    alert('Invalid JSON — cannot save.');
+    alert('Não foi possível salvar — JSON inválido.');
   }
 });
-
 qs('#exportLevel').addEventListener('click', ()=>{
   try{
     const data = JSON.parse(levelJSON.value);
@@ -485,66 +464,63 @@ qs('#exportLevel').addEventListener('click', ()=>{
     a.href = url; a.download = (data.name||'level') + '.json';
     a.click();
     URL.revokeObjectURL(url);
-  }catch(e){
-    alert('Invalid JSON — cannot export.');
-  }
+  }catch(e){ alert('Export fail — JSON inválido.'); }
 });
 
-// saved list buttons
+// saved list load/delete (event delegation)
 qs('#savedList').addEventListener('click', (ev)=>{
   const t = ev.target;
-  if(t.classList.contains('loadBtn')){
+  if (t.classList.contains('loadBtn')){
     const k = t.dataset.key;
-    const data = JSON.parse(localStorage.getItem(k));
-    levelJSON.value = JSON.stringify(data, null, 2);
-    activeLevel = data; spawnFromLevel(activeLevel);
-    qs('#infoBox').textContent = 'Loaded from saved: ' + data.name;
-    updateBestDisplay();
-  } else if(t.classList.contains('delBtn')){
+    try{
+      const data = JSON.parse(localStorage.getItem(k));
+      levelJSON.value = JSON.stringify(data, null, 2);
+      activeLevel = data; spawnFromLevel(activeLevel);
+      qs('#infoBox').textContent = `Loaded saved: ${data.name}`;
+      updateBestDisplay();
+    }catch(e){}
+  } else if (t.classList.contains('delBtn')){
     const k = t.dataset.key;
-    if(confirm('Delete this saved level?')) {
+    if (confirm('Eliminar o nível guardado?')) {
       localStorage.removeItem(k);
       refreshSavedList();
     }
   }
 });
 
-// levelSelect change
+// levelSelect handler
 qs('#levelSelect').addEventListener('change', ()=>{
-  const val = qs('#levelSelect').value;
-  if(val === '__example__'){
-    activeLevel = JSON.parse(JSON.stringify(exampleLevel));
-    spawnFromLevel(activeLevel);
+  const v = qs('#levelSelect').value;
+  if (!v) return;
+  if (v.startsWith('__example__')){
+    const idx = Number(v.replace('__example__',''));
+    const lev = exampleLevels[idx];
+    activeLevel = JSON.parse(JSON.stringify(lev));
     levelJSON.value = JSON.stringify(activeLevel, null, 2);
-    qs('#infoBox').textContent = 'Example loaded';
+    spawnFromLevel(activeLevel);
+    qs('#infoBox').textContent = `Example loaded: ${lev.name}`;
   } else {
-    const data = JSON.parse(localStorage.getItem(val));
-    activeLevel = data;
-    spawnFromLevel(activeLevel);
-    levelJSON.value = JSON.stringify(activeLevel, null, 2);
-    qs('#infoBox').textContent = 'Loaded saved: ' + (data.name||'Unnamed');
+    try{
+      const data = JSON.parse(localStorage.getItem(v));
+      activeLevel = data;
+      levelJSON.value = JSON.stringify(activeLevel, null, 2);
+      spawnFromLevel(activeLevel);
+      qs('#infoBox').textContent = `Saved loaded: ${data.name}`;
+    }catch(e){}
   }
   updateBestDisplay();
 });
 
-// speed slider changes
-qs('#speedRange').addEventListener('input', ()=>{
-  speedMultiplier = Number(qs('#speedRange').value) * (activeLevel?.speed || 1);
-});
+// speed UI updates used live
+qs('#speedRange').addEventListener('input', ()=>{/* value read in loop */});
 
-// play/stop/reset buttons
-qs('#playBtn').addEventListener('click', ()=> {
-  // if no active level, try parse JSON first
-  if(!activeLevel){
-    try{
-      activeLevel = JSON.parse(levelJSON.value);
-      spawnFromLevel(activeLevel);
-    }catch(e){
-      activeLevel = exampleLevel;
-      spawnFromLevel(activeLevel);
-    }
+// play / stop / reset
+qs('#playBtn').addEventListener('click', ()=>{
+  if (!activeLevel){
+    // try load from editor, otherwise default example
+    try{ activeLevel = JSON.parse(levelJSON.value); }catch(e){ activeLevel = JSON.parse(JSON.stringify(exampleLevels[0])); levelJSON.value = JSON.stringify(activeLevel, null, 2); }
   }
-  // start
+  ensureAudioResume();
   startGame();
 });
 qs('#stopBtn').addEventListener('click', stopGame);
@@ -554,60 +530,51 @@ qs('#resetBtn').addEventListener('click', resetGame);
 function renderAvatarPreview(){
   const box = qs('#avatarPreview');
   box.innerHTML = '';
-  const c = document.createElement('canvas'); c.width=80; c.height=60;
+  const c = document.createElement('canvas'); c.width = 80; c.height = 60;
   const cc = c.getContext('2d');
   cc.clearRect(0,0,80,60);
+  cc.translate(40,30);
   const shape = qs('#avatarShape').value;
   const color = qs('#avatarColor').value;
-  cc.translate(40,30);
   cc.fillStyle = color;
-  if(shape === 'square') cc.fillRect(-24,-18,48,36);
-  else if(shape === 'circle'){ cc.beginPath(); cc.arc(0,0,18,0,Math.PI*2); cc.fill();}
+  if (shape === 'square') cc.fillRect(-24,-18,48,36);
+  else if (shape === 'circle'){ cc.beginPath(); cc.arc(0,0,18,0,Math.PI*2); cc.fill(); }
   else { cc.beginPath(); cc.moveTo(0,-20); cc.lineTo(24,18); cc.lineTo(-24,18); cc.closePath(); cc.fill(); }
   box.appendChild(c);
 }
+qs('#avatarShape').value = player.shape;
+qs('#avatarColor').value = player.color;
 qs('#avatarShape').addEventListener('change', renderAvatarPreview);
 qs('#avatarColor').addEventListener('input', renderAvatarPreview);
-renderAvatarPreview();
-
 qs('#applyAvatar').addEventListener('click', ()=>{
-  const shape = qs('#avatarShape').value;
-  const color = qs('#avatarColor').value;
-  player.shape = shape; player.color = color;
-  localStorage.setItem(storagePrefix+'avatar_shape', shape);
-  localStorage.setItem(storagePrefix+'avatar_color', color);
+  player.shape = qs('#avatarShape').value;
+  player.color = qs('#avatarColor').value;
+  localStorage.setItem(storagePrefix+'avatar_shape', player.shape);
+  localStorage.setItem(storagePrefix+'avatar_color', player.color);
   renderAvatarPreview();
 });
+renderAvatarPreview();
 
-// ---------- Load saved levels & bests on init ----------
+// ---------- Init ----------
 (function init(){
-  // load saved levels list
+  // populate editor with first example
+  levelJSON.value = JSON.stringify(exampleLevels[0], null, 2);
+  // saved list + select
   refreshSavedList();
-  // set starter JSON
-  levelJSON.value = JSON.stringify(exampleLevel, null, 2);
-  // load best scores
-  loadBestScores();
-  // populate avatar values
-  qs('#avatarShape').value = player.shape;
-  qs('#avatarColor').value = player.color;
-  renderAvatarPreview();
-  // auto-select example
-  qs('#levelSelect').value = '__example__';
-  activeLevel = JSON.parse(JSON.stringify(exampleLevel));
+  // set active level default
+  activeLevel = JSON.parse(JSON.stringify(exampleLevels[0]));
   spawnFromLevel(activeLevel);
   draw();
+  loadBestScores();
 })();
 
-// ---------- small safety: prevent accidental drag selection while playing ----------
-let mouseDown = false;
-window.addEventListener('pointerdown', ()=> mouseDown=true);
-window.addEventListener('pointerup', ()=> mouseDown=false);
-
-// ---------- Debug helpers (optional) ----------
+// ---------- Utilities & debug ----------
+function ensureAudioResume(){ if (!audioCtx) return; if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{}); }
 window.__GD__ = {
-  setLevel(json){ try{ activeLevel = JSON.parse(json); spawnFromLevel(activeLevel); levelJSON.value = json;}catch(e){console.error(e)} },
-  getState(){ return {running,score,player,obstacles,activeLevel} }
+  getState(){ return {running,score,player,obstacles,activeLevel}; },
+  setLevel(json){ try{ activeLevel = JSON.parse(json); spawnFromLevel(activeLevel); levelJSON.value = json; }catch(e){ console.error(e); } }
 };
 </script>
+
 </body>
 </html>
